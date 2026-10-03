@@ -1,0 +1,70 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}HardPC | Tienda de Hardware y Componentes PC{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'tienda/tienda.css' %}">
+</head>
+<body>
+{% comment %}
+  =========================================================================
+  PLANTILLA BASE (la heredan la tienda y el panel de administración)
+    - Barra superior. El enlace al panel tiene la clase "solo-admin": parte
+      oculto y comun.js lo muestra solo si el claim "rol" del JWT es ADMIN.
+      Los enlaces técnicos (Swagger, ReDoc, API navegable) están solo dentro
+      del panel de administración, no en la tienda pública.
+    - Bloque "header" y bloque "contenido" que define cada página.
+    - FOOTER BASE con los DATOS DEL ALUMNO (context processor "alumno").
+    - comun.js: sesión JWT y cliente de la API compartidos.
+  =========================================================================
+{% endcomment %}
+
+<!-- BARRA SUPERIOR -->
+<div class="topbar">
+  <div class="contenedor">
+    {% block topbar_extra %}{% endblock %}
+    <a href="/panel/" class="solo-admin oculto">⚙ Panel de administración</a>
+  </div>
+</div>
+
+{% block header %}{% endblock %}
+
+{% block contenido %}{% endblock %}
+
+<!-- FOOTER BASE CON DATOS DEL ALUMNO -->
+<footer class="footer">
+  <div class="contenedor">
+    <div>
+      <a href="/" class="logo" style="color:#fff"><div class="logo-icono">H</div><span>Hard<b>PC</b></span></a>
+      <p>Tienda de Hardware y Componentes PC. Backend en Django REST Framework con autenticación JWT.</p>
+    </div>
+    <div>
+      <h5>Compra segura</h5>
+      <p class="footer-dato">Carro guardado en tu cuenta</p>
+      <p class="footer-dato">Precios congelados al comprar</p>
+      <p class="footer-dato">Stock validado al pagar</p>
+    </div>
+    <div>
+      <h5>Mi cuenta</h5>
+      <a href="/">Tienda</a>
+      {% block footer_cuenta %}{% endblock %}
+      <a href="/panel/" class="solo-admin oculto">Panel de administración</a>
+    </div>
+  </div>
+  <div class="footer-alumno">
+    Desarrollado por <b>{{ alumno.nombre }}</b> &middot; {{ alumno.seccion }} &middot; {{ alumno.anio }}
+    &middot; Desarrollo Backend - EVA 2
+  </div>
+</footer>
+
+<!-- Contenedor de modales y mensajes -->
+<div id="capaModal"></div>
+<div id="toast" class="toast oculto"></div>
+
+<script src="{% static 'tienda/comun.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

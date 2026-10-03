@@ -1,0 +1,130 @@
+{% extends "tienda/base.html" %}
+{% load static %}
+{% comment %}
+  =========================================================================
+  PÁGINA PRINCIPAL DE LA TIENDA (hereda de base.html)
+  Estructura inspirada en PC Factory:
+    1. Header: logo, botón Categorías, buscador, cuenta, mis compras, carro.
+    2. Franja promocional.
+    3. Banner con productos destacados (carrusel).
+    4. "Te recomendamos": filtros (django-filter) + grilla de productos.
+  El footer con los datos del alumno viene de base.html.
+  Todo el contenido dinámico se obtiene de la API REST con JWT (tienda.js).
+  =========================================================================
+{% endcomment %}
+
+{% block topbar_extra %}<a href="#" data-accion="mis-compras">Estado de mi despacho</a>{% endblock %}
+
+{% block header %}
+<!-- 2. HEADER PRINCIPAL -->
+<header class="header">
+  <div class="contenedor">
+    <a href="/" class="logo"><div class="logo-icono">H</div><span>Hard<b>PC</b></span></a>
+
+    <button class="btn-categorias" id="btnCategorias" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <span>Categorías</span>
+    </button>
+
+    <form class="buscador" id="formBuscar" role="search">
+      <input type="search" id="inputBuscar" placeholder="Busca aquí la tecnología para ti" aria-label="Buscar productos">
+      <button type="submit" aria-label="Buscar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      </button>
+    </form>
+
+    <div class="header-acciones">
+      <div class="cuenta">
+        <button id="btnCuenta">Hola, ingresa ▾</button>
+        <div class="menu-cuenta oculto" id="menuCuenta"></div>
+      </div>
+      <button data-accion="mis-compras"><span class="txt-compras">Mis compras</span></button>
+      <button class="btn-carro" id="btnCarro" aria-label="Carro de compras">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h4l4 15h14l3-10H9"/><circle cx="13" cy="26" r="2"/><circle cx="23" cy="26" r="2"/></svg>
+        <span class="badge oculto" id="badgeCarro">0</span>
+      </button>
+    </div>
+  </div>
+  <nav class="panel-categorias oculto" id="panelCategorias"><div class="contenedor" id="listaCategoriasMenu"></div></nav>
+</header>
+{% endblock %}
+
+{% block contenido %}
+<!-- 3. FRANJA PROMOCIONAL -->
+<div class="promo">
+  Ofertas <span class="tag">Hard</span> <span class="naranja">Aquí.</span>
+  Precios especiales online | <span class="naranja">12 Cuotas</span> en componentes seleccionados.
+</div>
+
+<!-- 4. BANNER / CARRUSEL -->
+<section class="hero">
+  <button class="hero-flecha izq" id="heroPrev" aria-label="Anterior">‹</button>
+  <div class="contenedor">
+    <div class="hero-texto">
+      <h2 id="heroTitulo">Arma tu</h2>
+      <div class="grande" id="heroGrande">PC Gamer</div><br>
+      <span class="pill">Online y Tiendas</span>
+    </div>
+    <div class="hero-cards" id="heroCards"></div>
+  </div>
+  <button class="hero-flecha der" id="heroNext" aria-label="Siguiente">›</button>
+</section>
+<div class="puntos" id="heroPuntos"></div>
+
+<!-- 5. CATÁLOGO -->
+<main class="contenedor">
+  <div class="titulo-seccion"><h3 id="tituloCatalogo">Te recomendamos</h3></div>
+
+  <div class="layout">
+    <aside class="filtros">
+      <h4>Filtrar productos</h4>
+      <form id="formFiltros">
+        <label for="fCategoria">Categoría</label>
+        <select id="fCategoria" name="categoria"><option value="">Todas</option></select>
+
+        <label for="fMarca">Marca</label>
+        <input id="fMarca" name="marca" placeholder="Ej: AMD, Intel...">
+
+        <label>Rango de precio (CLP)</label>
+        <div class="fila">
+          <input name="precio_min" type="number" min="0" placeholder="Mín">
+          <input name="precio_max" type="number" min="0" placeholder="Máx">
+        </div>
+
+        <label class="check"><input type="checkbox" name="en_stock" value="true"> Solo con stock</label>
+
+        <button class="btn btn-naranja btn-bloque" type="submit">Aplicar filtros</button>
+        <button class="btn btn-borde btn-bloque" type="reset">Limpiar</button>
+      </form>
+      <div class="param solo-admin oculto" id="paramFiltros" title="Consulta enviada a la API">GET /api/productos/</div>
+    </aside>
+
+    <section>
+      <div class="barra-grilla">
+        <span id="contador">Cargando productos…</span>
+        <label>Ordenar:
+          <select id="ordenar">
+            <option value="">Relevancia</option>
+            <option value="precio">Menor precio</option>
+            <option value="-precio">Mayor precio</option>
+            <option value="nombre">Nombre A-Z</option>
+            <option value="-stock">Más stock</option>
+          </select>
+        </label>
+      </div>
+      <div class="grilla" id="grilla"></div>
+      <div class="paginacion" id="paginacion"></div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block footer_cuenta %}
+      <a href="#" data-accion="mis-compras">Mis compras</a>
+      <a href="#" id="linkCarroFooter">Mi carro</a>
+{% endblock %}
+
+{% block scripts %}
+<a class="flotante" href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" title="Volver arriba">↑</a>
+<script src="{% static 'tienda/tienda.js' %}"></script>
+{% endblock %}

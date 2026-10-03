@@ -1,0 +1,67 @@
+{% extends "tienda/base.html" %}
+{% load static %}
+{% comment %}
+  =========================================================================
+  PANEL DE ADMINISTRACIÓN (/panel/) - hereda de base.html
+  Interfaz navegable con el mismo diseño de la tienda, SOLO para el rol ADMIN:
+    - Resumen (indicadores)          GET  /api/admin/resumen/
+    - Productos (CRUD de inventario) POST/PUT/DELETE /api/productos/
+    - Categorías (CRUD)              POST/PUT/DELETE /api/categorias/
+    - Órdenes (cambio de estado)     PATCH /api/ordenes/{id}/estado/
+  panel.js revisa el claim "rol" del JWT: si no es ADMIN muestra la pantalla
+  de acceso restringido. La protección real está en los permisos DRF.
+  =========================================================================
+{% endcomment %}
+
+{% block titulo %}HardPC | Panel de administración{% endblock %}
+
+{% block header %}
+<header class="header">
+  <div class="contenedor">
+    <a href="/" class="logo"><div class="logo-icono">H</div><span>Hard<b>PC</b></span></a>
+    <span class="panel-etiqueta">Panel de administración</span>
+    <div class="header-acciones" id="panelUsuario"></div>
+  </div>
+</header>
+{% endblock %}
+
+{% block contenido %}
+<!-- Pantalla de acceso restringido (visitantes y clientes) -->
+<main class="contenedor oculto" id="vistaAcceso">
+  <div class="acceso">
+    <div class="acceso-icono">🔒</div>
+    <h2>Acceso restringido</h2>
+    <p id="accesoMensaje">Esta sección es exclusiva para Administradores de TI. Inicia sesión con una cuenta de administrador.</p>
+    <form id="formLoginAdmin" class="acceso-form">
+      <div class="campo"><label>Usuario</label><input name="username" required autocomplete="username"></div>
+      <div class="campo"><label>Contraseña</label><input name="password" type="password" required autocomplete="current-password"></div>
+      <div class="error-form"></div>
+      <button class="btn btn-naranja btn-bloque">Ingresar como administrador</button>
+    </form>
+    <a href="/" class="btn btn-borde btn-bloque">Volver a la tienda</a>
+  </div>
+</main>
+
+<!-- Panel (solo ADMIN) -->
+<main class="contenedor panel-layout oculto" id="vistaPanel">
+  <nav class="panel-nav" aria-label="Secciones del panel">
+    <button data-seccion="resumen" class="activo">📊 Resumen</button>
+    <button data-seccion="productos">🖥️ Productos</button>
+    <button data-seccion="categorias">🗂️ Categorías</button>
+    <button data-seccion="ordenes">📦 Órdenes</button>
+    <hr>
+    <span class="panel-nav-titulo">API y documentación</span>
+    <a href="/api/docs/" target="_blank">📘 Documentación API (Swagger)</a>
+    <a href="/api/redoc/" target="_blank">📗 ReDoc</a>
+    <a href="/api/" target="_blank">🧭 API navegable</a>
+    <a href="/admin/" target="_blank">🛠️ Admin de Django</a>
+    <hr>
+    <a href="/">← Ver tienda</a>
+  </nav>
+  <section id="panelContenido" class="panel-contenido"></section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'tienda/panel.js' %}"></script>
+{% endblock %}
